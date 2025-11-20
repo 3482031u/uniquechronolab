@@ -107,7 +107,53 @@
       .mini-carousel{ height:220px; }
       .hero{grid-template-columns:1fr 420px}
     }
-  </style>
+/* 1) Уменьшаем глобальные отступы на мобильных */
+@media (max-width:900px) {
+  :root { --max-w: 100%; } 
+  .container { padding:14px; }
+
+  /* 2) Hero: одна колонка и порядок */
+  .hero { display: grid !important; grid-template-columns: 1fr !important; gap:18px !important; }
+  .hero-main { order: 1; }               /* left block first */
+  #featuredCarousel { order: 2; }       /* featured under it */
+
+  /* 3) уменьшение высоты карусели для телефонов */
+  #carouselViewport, #featuredCarousel .carousel, .mini-carousel { height: 180px !important; }
+
+  /* 4) подсказки: скрываем десктоп-навигацию и показываем гамбургер */
+  .nav { display: none !important; }
+  .hamburger { display: inline-flex !important; align-items:center; justify-content:center; padding:8px 10px; font-size:20px; border-radius:8px; background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.02); }
+
+  /* 5) уменьшаем шрифты и отступы внутри карт */
+  .card { padding:14px !important; border-radius:10px; }
+  h1 { font-size:22px; }
+  p.lead { font-size:14px; line-height:1.45; }
+}
+
+/* ===== tablet adjustments (slightly larger) ===== */
+@media (min-width: 521px) and (max-width: 900px) {
+  #carouselViewport, #featuredCarousel .carousel { height:200px !important; }
+  .gallery { grid-template-columns: repeat(2,1fr) !important; }
+  .logo img { height:44px !important; }
+}
+
+/* ===== make sure desktop keeps original layout ===== */
+@media (min-width: 901px) {
+  .nav { display:flex !important; }
+  .hamburger { display:none !important; }
+}
+
+/* 6) Mobile-only/desktop-only helpers (optional use) */
+.mobile-only{ display:block; }
+.desktop-only{ display:none; }
+@media(min-width:768px){
+  .mobile-only{ display:none; }
+  .desktop-only{ display:block; }
+}
+
+/* 7) ensure dots are aligned under carousel (if necessary) */
+#carouselDots { bottom:10px !important; }  
+</style>
 </head>
 <body>
 <div class="container">
@@ -119,7 +165,8 @@
         <div style="font-size:13px;color:var(--muted)">Кастомные часы Seiko — обзор и работы</div>
       </div>
     </div>
-    <nav>
+ <button id="menuBtn" class="hamburger" aria-label="Открыть меню">☰</button>   
+ <nav>
       <a href="#about">О проекте</a>
       <a href="#gallery">Галерея</a>
       <a href="#process">Процесс</a>
@@ -129,7 +176,7 @@
 
   <main>
     <section class="hero">
-      <div class="card">
+      <div class="hero-main">
         <h1>Кастомные Seiko — коллекция и обзоры</h1>
         <p class="lead">Показаны готовые работы, описания модификаций, используемые детали, и процесс кастомизации. Подробные фото и технические спецификации.</p>
         <a class="btn" href="#gallery">Посмотреть галерею</a>
@@ -139,7 +186,7 @@
       </div>
 
      <!-- ========== Начало: Featured carousel (замените ваш aside этим блоком) ========== -->
-<aside class="card featured-carousel" aria-label="featured" id="featuredCarousel">
+<aside id="featuredCarousel" class="card featured-carousel">
 
   <h3 style="margin-top:0">Избранная модель</h3>
 

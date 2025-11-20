@@ -140,52 +140,54 @@
 
      <!-- ========== Начало: Featured carousel (замените ваш aside этим блоком) ========== -->
 <aside class="card featured-carousel" aria-label="featured" id="featuredCarousel">
+
   <h3 style="margin-top:0">Избранная модель</h3>
 
-  <div class="carousel" id="carouselViewport" aria-hidden="false">
-  <div class="carousel-track" id="carouselTrack">
+  <!-- КАРУСЕЛЬ -->
+  <div class="carousel" id="carouselViewport">
 
-    <div class="carousel-slide">
-      <picture>
-        <source media="(min-width:1100px)" srcset="IMG_8771-large.PNG">
-        <source media="(min-width:768px)" srcset="IMG_8771-medium.PNG">
-        <img src="IMG_8771-small.PNG"
-             alt="Featured Seiko 1"
-             style="width:100%;height:100%;object-fit:cover;">
-      </picture>
+    <div class="carousel-track" id="carouselTrack">
+
+      <div class="carousel-slide">
+        <picture>
+          <source media="(min-width:1100px)" srcset="IMG_8771.PNG">
+          <source media="(min-width:768px)" srcset="IMG_8771.PNG">
+          <img src="IMG_8771.PNG" alt="Featured Seiko 1"
+               style="width:100%;height:100%;object-fit:cover;">
+        </picture>
+      </div>
+
+      <div class="carousel-slide">
+        <picture>
+          <source media="(min-width:1100px)" srcset="IMG_8770.PNG">
+          <source media="(min-width:768px)" srcset="IMG_8770.PNG">
+          <img src="IMG_8770.PNG" alt="Featured Seiko 2"
+               style="width:100%;height:100%;object-fit:cover;">
+        </picture>
+      </div>
+
+      <div class="carousel-slide">
+        <picture>
+          <source media="(min-width:1100px)" srcset="IMG_8769.PNG">
+          <source media="(min-width:768px)" srcset="IMG_8769.PNG">
+          <img src="IMG_8769.PNG" alt="Featured Seiko 3"
+               style="width:100%;height:100%;object-fit:cover;">
+        </picture>
+      </div>
+
     </div>
 
-    <div class="carousel-slide">
-      <picture>
-        <source media="(min-width:1100px)" srcset="IMG_8770-large.PNG">
-        <source media="(min-width:768px)" srcset="IMG_8770-medium.PNG">
-        <img src="IMG_8770-small.PNG"
-             alt="Featured Seiko 2"
-             style="width:100%;height:100%;object-fit:cover;">
-      </picture>
-    </div>
-
-    <div class="carousel-slide">
-      <picture>
-        <source media="(min-width:1100px)" srcset="IMG_8769-large.PNG">
-        <source media="(min-width:768px)" srcset="IMG_8769-medium.PNG">
-        <img src="IMG_8769-small.PNG"
-             alt="Featured Seiko 3"
-             style="width:100%;height:100%;object-fit:cover;">
-      </picture>
-    </div>
+    <!-- ТОЧКИ -->
+    <div class="dots" id="carouselDots"></div>
 
   </div>
-</div>
-    <!-- Индикаторы (точки) -->
-    <div class="dots" id="carouselDots" aria-hidden="true"></div>
-  </div>
 
-  <!-- Спецификации (пример) -->
+  <!-- СПЕЦИФИКАЦИИ -->
   <dl class="specs" style="margin-top:12px">
-    <div><dt>Модель</dt><dd> Seiko GMT “Pepsi”</dd></div>
+    <div><dt>Модель</dt><dd>Seiko GMT “Pepsi”</dd></div>
     <div><dt>Механизм</dt><dd>автомат Seiko</dd></div>
   </dl>
+
 </aside>
 
 <!-- ======= Стили (вставьте в <style> внутри <head> или в ваш CSS-файл) ======= -->
@@ -263,6 +265,76 @@
 @media (max-width:520px){
   .featured-carousel .carousel{ height:200px; }
 }
+/* ---------- Featured carousel (responsive) ---------- */
+.featured-carousel { max-width:420px; width:100%; box-sizing:border-box; }
+.featured-carousel h3 { margin:0 0 12px 0; }
+
+/* viewport карусели */
+#carouselViewport {
+  position:relative;
+  overflow:hidden;
+  border-radius:10px;
+  height:260px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+  box-shadow: 0 10px 30px rgba(2,6,23,0.45) inset;
+}
+
+/* трек и слайды */
+#carouselTrack {
+  display:flex;
+  height:100%;
+  transition:transform .5s cubic-bezier(.22,.9,.32,1);
+  will-change: transform;
+}
+.carousel-slide {
+  min-width:100%;
+  height:100%;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px;
+  box-sizing:border-box;
+}
+.carousel-slide picture,
+.carousel-slide img { width:100%; height:100%; display:block; }
+.carousel-slide img { object-fit:cover; border-radius:8px; user-select:none; -webkit-user-drag:none; }
+
+/* точки — внутри карусели, под изображением */
+#carouselDots {
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:10px;
+  display:flex;
+  gap:8px;
+  z-index:5;
+}
+#carouselDots .dot {
+  width:8px; height:8px; border-radius:50%;
+  background:rgba(255,255,255,0.22); cursor:pointer;
+  transition: transform .12s ease, background .12s ease;
+}
+#carouselDots .dot.active { background:var(--accent); transform:scale(1.25); }
+
+/* specs (внутри той же карточки, под каруселью) */
+.featured-carousel .specs {
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  color:var(--muted);
+}
+@media (min-width:600px) {
+  .featured-carousel .specs { grid-template-columns:repeat(2,1fr); }
+}
+
+/* mobile tweaks */
+@media (max-width:520px){
+  #carouselViewport { height:200px; }
+  .carousel-slide { padding:6px; }
+}
+
 </style>
 
 <!-- ======= Скрипт (вставьте прямо перед </body>) ======= -->
@@ -937,5 +1009,93 @@
   "sameAs":["https://www.instagram.com/uniquechronolab"]
 }
 </script>
+
+<script>
+(function(){
+  // IDs used in the HTML: carouselTrack, carouselDots, carouselViewport
+  const track = document.getElementById('carouselTrack');
+  const dotsWrap = document.getElementById('carouselDots');
+  const viewport = document.getElementById('carouselViewport');
+
+  if(!track || !dotsWrap || !viewport) return; // safety
+
+  const slides = Array.from(track.querySelectorAll('.carousel-slide'));
+  const total = slides.length;
+  let index = 0;
+  let autoplayId = null;
+  const AUTOPLAY_DELAY = 1600;
+
+  // create dots dynamically if there are none
+  function initDots(){
+    dotsWrap.innerHTML = '';
+    for(let i=0;i<total;i++){
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'dot' + (i===0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to slide ' + (i+1));
+      dot.dataset.index = i;
+      dot.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(dot);
+    }
+  }
+
+  function updateDots(){
+    const dots = Array.from(dotsWrap.children);
+    dots.forEach(d => d.classList.toggle('active', Number(d.dataset.index) === index));
+  }
+
+  function goTo(i){
+    index = ((i % total) + total) % total;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    updateDots();
+  }
+
+  function next(){ goTo(index + 1); }
+
+  function startAutoplay(){
+    if(autoplayId) return;
+    autoplayId = setInterval(next, AUTOPLAY_DELAY);
+  }
+  function stopAutoplay(){
+    if(!autoplayId) return;
+    clearInterval(autoplayId);
+    autoplayId = null;
+  }
+
+  // Hover starts autoplay, leave stops it
+  viewport.addEventListener('mouseenter', () => { if(total>1) startAutoplay(); });
+  viewport.addEventListener('mouseleave', () => stopAutoplay());
+
+  // Touch support (simple swipe)
+  let touchStartX = null;
+  viewport.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    stopAutoplay();
+  }, {passive:true});
+  viewport.addEventListener('touchend', e => {
+    if(touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if(Math.abs(diff) > 40){
+      if(diff > 0) next(); else goTo(index - 1);
+    }
+    touchStartX = null;
+  });
+
+  // Allow keyboard navigation when carousel focused
+  viewport.setAttribute('tabindex', '0');
+  viewport.addEventListener('keydown', e => {
+    if(e.key === 'ArrowLeft') { goTo(index - 1); e.preventDefault(); }
+    if(e.key === 'ArrowRight') { goTo(index + 1); e.preventDefault(); }
+  });
+
+  // Initialize
+  if(total > 0){
+    initDots();
+    goTo(0);
+  }
+})();
+</script>
+
 </body>
 </html>

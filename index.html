@@ -1,96 +1,113 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1" />
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>UniqueChronoLab — кастомные часы Seiko</title>
-<meta name="description" content="UniqueChronoLab — кастомные Seiko: обзор моделей, процесс кастомизации, галерея работ и контакты." />
-<!-- Open Graph -->
-<meta property="og:title" content="UniqueChronoLab — кастомные часы Seiko" />
-<meta property="og:description" content="Обзоры и примеры кастомов Seiko, процесс, спецификации и контакты." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://yourdomain.example/" />
-<meta property="og:image" content="https://417946534_352325790863238_6537510201962973071_n (1).jpg" />
-<link rel="icon" href="/favicon.ico" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>UniqueChronoLab — кастомные часы Seiko</title>
 
-<!-- Basic styles (customize) -->
-<style>
-  :root{
-    --bg:#0f1724; --card:#0b1220; --accent:#f0a500; --muted:#9aa4b2; --text:#e6eef6;
-    --max-w:1100px;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue";background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
-  .container{max-width:var(--max-w);margin:0 auto;padding:28px}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-  .logo{display:flex;gap:12px;align-items:center}
-  .logo img{height:48px;border-radius:8px}
-  nav a{color:var(--muted);text-decoration:none;margin-left:14px}
-  nav a:hover{color:var(--text)}
-  .hero{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;margin-bottom:34px}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
-  h1{margin:0 0 12px 0;font-size:28px}
-  p.lead{color:var(--muted);margin:0 0 16px}
-  .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#081123;font-weight:600;text-decoration:none}
-  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-  .gallery img{width:100%;height:160px;object-fit:cover;border-radius:8px;cursor:pointer;display:block}
-  section{margin-bottom:28px}
-  .specs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .specs dt{font-weight:700}
-  footer{color:var(--muted);font-size:13px;padding:18px 0;border-top:1px solid rgba(255,255,255,0.03)}
-  /* responsive */
-  @media (max-width:900px){
-    .hero{grid-template-columns:1fr;gap:18px}
-    .gallery{grid-template-columns:repeat(2,1fr)}
-  }
-  @media (max-width:520px){
-    .gallery{grid-template-columns:1fr}
-  }
-  /* simple lightbox */
-  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .2s}
-  .lightbox.show{opacity:1;pointer-events:auto}
-  .lightbox img{max-width:92%;max-height:92%;border-radius:8px}
-  .close-x{position:absolute;right:18px;top:18px;color:#fff;font-size:22px;cursor:pointer}
- .container{ padding:18px; max-width:1000px; margin:0 auto; }
-  .header{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .logo img{ height:36px; }
+  <meta name="description" content="UniqueChronoLab — кастомные Seiko: обзор моделей, процесс кастомизации, галерея работ и контакты." />
+  <link rel="canonical" href="https://3482031u.github.io/uniquechronolab/" />
 
-  .gallery-grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+  <!-- Open Graph -->
+  <meta property="og:title" content="UniqueChronoLab — кастомные часы Seiko" />
+  <meta property="og:description" content="Обзоры и примеры кастомов Seiko, процесс, спецификации и контакты." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://3482031u.github.io/uniquechronolab/" />
+  <!-- Замените значение og:image на реальный путь к файлу в вашем репозитории, без пробелов/скобок -->
+  <meta property="og:image" content="images/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
 
-  .mini-carousel{ height:180px; }
+  <!-- favicon (в корне репо должен быть файл favicon.ico) -->
+  <link rel="icon" href="favicon.ico" />
 
-  .nav{ display:none; }
-  .hamburger{ display:block; }
+  <!-- Стили: объединённый и чистый CSS. 
+       Если у вас большой внешний файл, лучше вынести эти правила в styles.css и подключить через <link>. -->
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#f0a500;
+      --muted:#9aa4b2;
+      --text:#e6eef6;
+      --max-w:1100px;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
 
-  @media (min-width: 768px){
-    .gallery-grid{ grid-template-columns:repeat(2,1fr); }
-    .logo img{ height:44px; }
-    .mini-carousel{ height:200px; }
-    .nav{ display:flex; gap:12px; align-items:center; }
-    .hamburger{ display:none; }
-  }
+    .container{
+      max-width:var(--max-w);
+      margin:0 auto;
+      padding:28px;
+    }
 
-  @media (min-width: 1100px){
-    .gallery-grid{ grid-template-columns:repeat(3,1fr); }
-    .container{ padding:28px; }
-    .logo img{ height:48px; }
-    .mini-carousel{ height:220px; }
-  }
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo img{height:48px;border-radius:8px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    nav a:hover{color:var(--text)}
 
-.specs {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;margin-bottom:34px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:20px;border-radius:12px;
+      box-shadow:0 6px 20px rgba(2,6,23,0.6)
+    }
+    h1{margin:0 0 12px 0;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 16px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#081123;font-weight:600;text-decoration:none}
 
-@media (min-width: 600px) {
-  .specs {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .gallery img{width:100%;height:160px;object-fit:cover;border-radius:8px;cursor:pointer;display:block}
 
-</style>
+    section{margin-bottom:28px}
+    .specs{display:grid;grid-template-columns:1fr;gap:14px}
+    @media (min-width:600px){ .specs{ grid-template-columns:repeat(2,1fr) } }
+    .specs dt{font-weight:700}
+
+    footer{color:var(--muted);font-size:13px;padding:18px 0;border-top:1px solid rgba(255,255,255,0.03)}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .2s}
+    .lightbox.show{opacity:1;pointer-events:auto}
+    .lightbox img{max-width:92%;max-height:92%;border-radius:8px}
+    .close-x{position:absolute;right:18px;top:18px;color:#fff;font-size:22px;cursor:pointer}
+
+    /* Responsive helpers (mobile-first) */
+    .container{ padding:18px; max-width:1000px; }
+    .logo img{ height:36px; }
+
+    .gallery-grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+
+    .mini-carousel{ height:180px; }
+
+    .nav{ display:none; }
+    .hamburger{ display:block; }
+
+    @media (min-width:768px){
+      .gallery-grid{ grid-template-columns:repeat(2,1fr); }
+      .logo img{ height:44px; }
+      .mini-carousel{ height:200px; }
+      .nav{ display:flex; gap:12px; align-items:center; }
+      .hamburger{ display:none; }
+    }
+
+    @media (min-width:1100px){
+      .gallery-grid{ grid-template-columns:repeat(3,1fr); }
+      .container{ padding:28px; max-width:var(--max-w); }
+      .logo img{ height:48px; }
+      .mini-carousel{ height:220px; }
+      .hero{grid-template-columns:1fr 420px}
+    }
+  </style>
 </head>
 <body>
 <div class="container">
@@ -130,8 +147,8 @@
 
     <div class="carousel-slide">
       <picture>
-        <source media="(min-width:1100px)" srcset="images/IMG_8771-large.PNG">
-        <source media="(min-width:768px)" srcset="images/IMG_8771-medium.PNG">
+        <source media="(min-width:1100px)" srcset="IMG_8771-large.PNG">
+        <source media="(min-width:768px)" srcset="IMG_8771-medium.PNG">
         <img src="IMG_8771-small.PNG"
              alt="Featured Seiko 1"
              style="width:100%;height:100%;object-fit:cover;">
@@ -140,8 +157,8 @@
 
     <div class="carousel-slide">
       <picture>
-        <source media="(min-width:1100px)" srcset="images/IMG_8770-large.PNG">
-        <source media="(min-width:768px)" srcset="images/IMG_8770-medium.PNG">
+        <source media="(min-width:1100px)" srcset="IMG_8770-large.PNG">
+        <source media="(min-width:768px)" srcset="IMG_8770-medium.PNG">
         <img src="IMG_8770-small.PNG"
              alt="Featured Seiko 2"
              style="width:100%;height:100%;object-fit:cover;">
@@ -150,8 +167,8 @@
 
     <div class="carousel-slide">
       <picture>
-        <source media="(min-width:1100px)" srcset="images/IMG_8769-large.PNG">
-        <source media="(min-width:768px)" srcset="images/IMG_8769-medium.PNG">
+        <source media="(min-width:1100px)" srcset="IMG_8769-large.PNG">
+        <source media="(min-width:768px)" srcset="IMG_8769-medium.PNG">
         <img src="IMG_8769-small.PNG"
              alt="Featured Seiko 3"
              style="width:100%;height:100%;object-fit:cover;">

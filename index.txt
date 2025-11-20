@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UniqueChronoLab — кастомные часы Seiko</title>
+<meta name="description" content="UniqueChronoLab — кастомные Seiko: обзор моделей, процесс кастомизации, галерея работ и контакты." />
+<!-- Open Graph -->
+<meta property="og:title" content="UniqueChronoLab — кастомные часы Seiko" />
+<meta property="og:description" content="Обзоры и примеры кастомов Seiko, процесс, спецификации и контакты." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://yourdomain.example/" />
+<meta property="og:image" content="https://yourdomain.example/og-image.jpg" />
+<link rel="icon" href="/favicon.ico" />
+
+<!-- Basic styles (customize) -->
+<style>
+  :root{
+    --bg:#0f1724; --card:#0b1220; --accent:#f0a500; --muted:#9aa4b2; --text:#e6eef6;
+    --max-w:1100px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue";background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+  .container{max-width:var(--max-w);margin:0 auto;padding:28px}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .logo{display:flex;gap:12px;align-items:center}
+  .logo img{height:48px;border-radius:8px}
+  nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+  nav a:hover{color:var(--text)}
+  .hero{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;margin-bottom:34px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+  h1{margin:0 0 12px 0;font-size:28px}
+  p.lead{color:var(--muted);margin:0 0 16px}
+  .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#081123;font-weight:600;text-decoration:none}
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+  .gallery img{width:100%;height:160px;object-fit:cover;border-radius:8px;cursor:pointer;display:block}
+  section{margin-bottom:28px}
+  .specs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .specs dt{font-weight:700}
+  footer{color:var(--muted);font-size:13px;padding:18px 0;border-top:1px solid rgba(255,255,255,0.03)}
+  /* responsive */
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;gap:18px}
+    .gallery{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:520px){
+    .gallery{grid-template-columns:1fr}
+  }
+  /* simple lightbox */
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .2s}
+  .lightbox.show{opacity:1;pointer-events:auto}
+  .lightbox img{max-width:92%;max-height:92%;border-radius:8px}
+  .close-x{position:absolute;right:18px;top:18px;color:#fff;font-size:22px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <img src="/UCL/417946534_352325790863238_6537510201962973071_n (1).jpg" alt="UniqueChronoLab logo" />
+      <div>
+        <div style="font-weight:700">UniqueChronoLab</div>
+        <div style="font-size:13px;color:var(--muted)">Кастомные часы Seiko — обзор и работы</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#about">О проекте</a>
+      <a href="#gallery">Галерея</a>
+      <a href="#process">Процесс</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card">
+        <h1>Кастомные Seiko — коллекция и обзоры</h1>
+        <p class="lead">Показаны готовые работы, описания модификаций, используемые детали, и процесс кастомизации. Подробные фото и технические спецификации.</p>
+        <a class="btn" href="#gallery">Посмотреть галерею</a>
+        <div style="margin-top:18px;color:var(--muted);font-size:14px">
+          <strong>Контакт:</strong> <a href="https://www.instagram.com/uniquechronolab" target="_blank" style="color:var(--text)">@uniquechronolab</a>
+        </div>
+      </div>
+
+      <aside class="card" aria-label="featured">
+        <h3 style="margin-top:0">Избранная модель</h3>
+        <img src="/featured.jpg" alt="Featured Seiko custom" style="width:100%;height:260px;object-fit:cover;border-radius:8px;margin-bottom:10px" />
+        <dl class="specs">
+          <div>
+            <dt>Модель</dt><dd>Seiko SKX007 (custom dial & bezel)</dd>
+          </div>
+          <div>
+            <dt>Механизм</dt><dd>Seiko NH35A (tuned)</dd>
+          </div>
+        </dl>
+      </aside>
+    </section>
+
+    <section id="about" class="card">
+      <h2>О проекте</h2>
+      <p style="color:var(--muted)">UniqueChronoLab специализируется на изменении внешнего вида и функциональности Seiko: сменные циферблаты, безели, ремешки, доработка стрелок и т.д. Каждая работа — ручная сборка и проверка качества.</p>
+    </section>
+
+    <section id="gallery" class="card">
+      <h2>Галерея работ</h2>
+      <p style="color:var(--muted)">Кликните на фото для увеличения.</p>
+      <div class="gallery" id="galleryGrid">
+        <!-- Замените src на свои изображения -->
+        <img src="/g1.jpg" alt="Custom Seiko 1" data-full="/g1-large.jpg" />
+        <img src="/g2.jpg" alt="Custom Seiko 2" data-full="/g2-large.jpg" />
+        <img src="/g3.jpg" alt="Custom Seiko 3" data-full="/g3-large.jpg" />
+        <img src="/g4.jpg" alt="Custom Seiko 4" data-full="/g4-large.jpg" />
+        <img src="/g5.jpg" alt="Custom Seiko 5" data-full="/g5-large.jpg" />
+        <img src="/g6.jpg" alt="Custom Seiko 6" data-full="/g6-large.jpg" />
+      </div>
+    </section>
+
+    <section id="process" class="card">
+      <h2>Процесс кастомизации</h2>
+      <ol style="color:var(--muted)">
+        <li>Консультация и выбор базовой модели.</li>
+        <li>Подбор частей (циферблаты, безели, стрелки, ремешки).</li>
+        <li>Разборка, чистка и подготовка корпуса и механизма.</li>
+        <li>Сборка, регулировка хода, тест на влагозащиту (если применимо).</li>
+        <li>Финальная полировка и фотосъёмка для галереи.</li>
+      </ol>
+    </section>
+
+    <section id="instagram" class="card">
+      <h2>Наш Instagram</h2>
+      <p style="color:var(--muted)">Смотрите кейсы и бehind-the-scenes в Instagram.</p>
+
+      <!-- Пример: вставлять отдельные embed-коды от Instagram (для каждого поста) -->
+      <!-- Для автоматического добавления ленты потребуется Instagram API -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="https://www.instagram.com/uniquechronolab" target="_blank" class="btn" style="text-decoration:none">Открыть Instagram</a>
+        <!-- Если у вас есть конкретный пост, вставьте embed-код сюда (через Instagram -> Embed) -->
+      </div>
+    </section>
+
+    <section id="contacts" class="card">
+      <h2>Контакты</h2>
+      <p style="color:var(--muted)"><strong>Instagram:</strong> <a href="https://www.instagram.com/uniquechronolab" target="_blank">@uniquechronolab</a></p>
+      <p style="color:var(--muted)"><strong>Почта:</strong> <a href="mailto:info@yourdomain.example" style="color:var(--text)">info@yourdomain.example</a></p>
+      <p style="color:var(--muted)"><strong>Заказы и консультации:</strong> укажите модель и желаемые изменения.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div>© <span id="year"></span> UniqueChronoLab — все права защищены</div>
+      <div style="color:var(--muted)">Сделано с любовью к часам</div>
+    </div>
+  </footer>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" role="dialog" aria-hidden="true">
+  <span class="close-x" id="lbClose" aria-label="Закрыть">✕</span>
+  <img id="lbImg" src="" alt="Увеличенное изображение" />
+</div>
+
+<script>
+  // Показ текущего года
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Lightbox простая логика
+  const gallery = document.getElementById('galleryGrid');
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbClose = document.getElementById('lbClose');
+
+  gallery.addEventListener('click', (e) => {
+    const img = e.target.closest('img');
+    if(!img) return;
+    const full = img.dataset.full || img.src;
+    lbImg.src = full;
+    lb.classList.add('show');
+    lb.setAttribute('aria-hidden','false');
+  });
+  lbClose.addEventListener('click', ()=>{ lb.classList.remove('show'); lb.setAttribute('aria-hidden','true');});
+  lb.addEventListener('click', (e) => { if(e.target===lb) { lb.classList.remove('show'); lb.setAttribute('aria-hidden','true'); }});
+</script>
+
+<!-- JSON-LD: Organization (пример) -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  "name":"UniqueChronoLab",
+  "url":"https://yourdomain.example/",
+  "logo":"https://yourdomain.example/logo.png",
+  "sameAs":["https://www.instagram.com/uniquechronolab"]
+}
+</script>
+</body>
+</html>

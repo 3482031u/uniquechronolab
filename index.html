@@ -155,31 +155,41 @@
 #carouselDots { bottom:10px !important; }  
 </style>
 <style>
-/* SNOW BACKGROUND - canvas based, background layer (non-interactive) */
-#snow-canvas {
+/* ❄ Падающие снежинки — ТЕПЕРЬ НА ЗАДНЕМ ФОНЕ */
+.snowflake {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;              /* keep behind page content */
-  pointer-events: none;    /* don't block clicks */
-  mix-blend-mode: screen;  /* makes snow look lighter on dark background */
+  top: -10px;
+  color: white;
+  font-size: 12px;
+  pointer-events: none;
+  animation: fall linear infinite;
+  opacity: 0.7;
+  z-index: 1;        /* ← БЫЛО 9999 — из-за этого снег перекрывал контент */
 }
 
-/* ensure main content sits above snow */
-.container { position: relative; z-index: 2; }
+@keyframes fall {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(110vh) rotate(360deg); }
+}
 
-/* fallback ground (very subtle) */
-#snow-fallback-ground {
+/* ❄ Нижний слой снега — тоже сзади */
+#snow-ground {
   position: fixed;
-  left: 0;
-  right: 0;
   bottom: 0;
-  height: 48px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAUCAYAAADWcSspAAAADUlEQVQYV2NkrK2uZQACogIuF+PpWAAAAABJRU5ErkJggg==') repeat-x;
+  background-size: contain;
   pointer-events: none;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.06));
-  opacity: 0.6;
+  z-index: 0;       /* ← Был 9998, теперь за снегом и контентом */
+  opacity: 0.8;
+}
+
+/* Чтобы контент гарантированно был выше */
+body * {
+  position: relative;
+  z-index: 2;
 }
 </style>
 
@@ -1298,179 +1308,34 @@
 })();
 </script>
 <script>
-/* Canvas snow with accumulation (keeps behind content and accumulates at bottom)
-   Tuned for slower, unobtrusive snowfall on mobile/desktop.
-*/
-(function(){
-  const DPR = Math.max(1, window.devicePixelRatio || 1);
-  const canvas = document.createElement('canvas');
-  canvas.id = 'snow-canvas';
-  document.body.appendChild(canvas);
+// ❄ Создание снежинок
+function createSnowflake() {
+  const snowflake = document.createElement("div");
+  snowflake.classList.add("snowflake");
+  snowflake.textContent = "❄";
 
-  // fallback ground element (subtle visible snow at bottom)
-  const fallbackGround = document.createElement('div');
-  fallbackGround.id = 'snow-fallback-ground';
-  document.body.appendChild(fallbackGround);
+  // Случайное положение
+  snowflake.style.left = Math.random() * window.innerWidth + "px";
 
-  const ctx = canvas.getContext('2d', { alpha: true });
+  // Индивидуальная скорость падения
+  const fallDuration = Math.random() * 5 + 4;
+  snowflake.style.animationDuration = fallDuration + "s";
 
-  // SETTINGS (tweak for performance / look)
-  const BUCKET_PX = 6;           // width of accumulation bucket (bigger -> less detail, faster)
-  const MAX_PARTICLES = 80;      // fewer particles -> less busy
-  const SPAWN_CHANCE = 0.006;    // chance to spawn each frame (very gentle)
-  const WIND_AMPLITUDE = 0.35;   // gentle wind
-  const GRAVITY = 0.12;          // gentle fall
-  const FRICTION = 0.995;
-  const PILE_DAMPING = 0.96;
-  const SNOW_COLOR = '255,255,255';
+  // Случайный размер
+  const size = Math.random() * 12 + 8;
+  snowflake.style.fontSize = size + "px";
 
-  let width = 0, height = 0;
-  let buckets = [];
-  let bucketCount = 0;
-  const particles = [];
+  document.body.appendChild(snowflake);
 
-  function resize() {
-    width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    canvas.width = Math.floor(width * DPR);
-    canvas.height = Math.floor(height * DPR);
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+ }
 
-    bucketCount = Math.ceil(width / BUCKET_PX);
-    buckets = new Float32Array(bucketCount);
-    for(let i=0;i<bucketCount;i++) buckets[i] = 0;
-  }
+// создаём снежинку каждые 200–500ms
+setInterval(createSnowflake, 200 + Math.random() * 200);
 
-  function spawn() {
-    if(particles.length >= MAX_PARTICLES) return;
-    const x = Math.random() * width;
-    const r = 1 + Math.random() * 5; // smaller average radius
-    const mass = Math.max(0.3, r * 0.06);
-    particles.push({
-      x: x,
-      y: -10 - Math.random()*20,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: 0.2 + Math.random() * 0.4,
-      r: r,
-      mass: mass,
-      settled: false
-    });
-  }
-
-  function bucketIndex(x) {
-    let i = Math.floor(x / BUCKET_PX);
-    if(i < 0) i = 0;
-    if(i >= bucketCount) i = bucketCount - 1;
-    return i;
-  }
-
-  function settleParticle(p) {
-    const start = Math.max(0, bucketIndex(p.x - p.r));
-    const end = Math.min(bucketCount - 1, bucketIndex(p.x + p.r));
-    const spread = end - start + 1;
-    const add = (p.r * 0.5) / Math.max(1, spread);
-    for(let j = start; j <= end; j++) buckets[j] += add;
-  }
-
-  let last = performance.now();
-  let windOffset = 0;
-  function frame(now) {
-    const dt = Math.min(40, now - last) / 16.6667;
-    last = now;
-
-    if(canvas.width / DPR !== width || canvas.height / DPR !== height) {
-      resize();
-    }
-
-    // spawn with chance
-    if(Math.random() < SPAWN_CHANCE) spawn();
-
-    windOffset += 0.001 * dt;
-    const wind = Math.sin(windOffset * 0.6) * WIND_AMPLITUDE + Math.sin(windOffset * 0.2) * (WIND_AMPLITUDE*0.4);
-
-    for(let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      if(p.settled) { particles.splice(i,1); continue; }
-      p.vx = p.vx * FRICTION + wind * 0.02;
-      p.vy += GRAVITY * dt;
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      if(p.x < -50) p.x = width + 50;
-      if(p.x > width + 50) p.x = -50;
-
-      const idx = bucketIndex(p.x);
-      const pileTop = height - buckets[idx];
-      if(p.y + p.r >= pileTop) {
-        p.settled = true;
-        settleParticle(p);
-        particles.splice(i,1);
-        continue;
-      }
-      if(p.y > height + 200) {
-        particles.splice(i,1);
-        continue;
-      }
-    }
-
-    // smoothing the pile
-    for(let j=0;j<bucketCount;j++){
-      if(j>0) buckets[j] = buckets[j] * PILE_DAMPING + buckets[j-1] * (1-PILE_DAMPING) * 0.28;
-      if(j<bucketCount-1) buckets[j] = buckets[j] * PILE_DAMPING + buckets[j+1] * (1-PILE_DAMPING) * 0.28;
-    }
-
-    // draw
-    ctx.clearRect(0,0,width,height);
-
-    // draw settled pile
-    ctx.beginPath();
-    ctx.moveTo(0, height);
-    for(let j=0;j<bucketCount;j++){
-      const x = j * BUCKET_PX + 0.5*BUCKET_PX;
-      const y = height - buckets[j];
-      ctx.lineTo(x, y);
-    }
-    ctx.lineTo(width, height);
-    ctx.closePath();
-    const g = ctx.createLinearGradient(0, height-200, 0, height);
-    g.addColorStop(0, 'rgba(255,255,255,0.06)');
-    g.addColorStop(1, 'rgba(255,255,255,0.95)');
-    ctx.fillStyle = g;
-    ctx.fill();
-
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // draw falling particles
-    for(let i=0;i<particles.length;i++){
-      const p = particles[i];
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, Math.max(1, p.r/2), 0, Math.PI*2);
-      ctx.closePath();
-      ctx.fillStyle = `rgba(${SNOW_COLOR},${Math.max(0.12, Math.min(0.9, p.r/10))})`;
-      ctx.fill();
-    }
-
-    requestAnimationFrame(frame);
-  }
-
-  // expose for debugging
-  window.__snow = { spawn, particles, buckets, resize };
-
-  resize();
-  requestAnimationFrame(frame);
-
-  // pause when page hidden
-  document.addEventListener('visibilitychange', () => {
-    // could pause spawning if needed
-  });
-
-  // responsive resize
-  let rto = null;
-  window.addEventListener('resize', () => { clearTimeout(rto); rto = setTimeout(()=>resize(), 120); });
-})();
+// ❄ Слой снега внизу
+const snowGround = document.createElement("div");
+snowGround.id = "snow-ground";
+document.body.appendChild(snowGround);
 </script>
 
 </body>

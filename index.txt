@@ -154,6 +154,39 @@
 /* 7) ensure dots are aligned under carousel (if necessary) */
 #carouselDots { bottom:10px !important; }  
 </style>
+<style>
+/* ❄ Падающие снежинки */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  color: white;
+  font-size: 12px;
+  pointer-events: none;
+  animation: fall linear infinite;
+  opacity: 0.8;
+  z-index: 9999;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(110vh) rotate(360deg); }
+}
+
+/* ❄ Нижний слой снега */
+#snow-ground {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAUCAYAAADWcSspAAAADUlEQVQYV2NkrK2uZQACogIuF+PpWAAAAABJRU5ErkJggg==') repeat-x;
+  background-size: contain;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.9;
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -264,7 +297,7 @@
 }
 
 /* каждый слайд занимает 100% ширины контейнера */
-overflow:hidden{
+.carousel-slide{
   min-width:100%;
   height:100%;
   flex-shrink:0;
@@ -311,7 +344,7 @@ overflow:hidden{
 
 /* responsive: уменьшим высоту на маленьких экранах */
 @media (max-width:520px){
-  .featured-carousel .carousel{ height:260px; }
+  .featured-carousel .carousel{ height:360px; }
 }
 /* ---------- Featured carousel (responsive) ---------- */
 .featured-carousel { max-width:420px; width:100%; box-sizing:border-box; }
@@ -322,7 +355,7 @@ overflow:hidden{
   position:relative;
   overflow:hidden;
   border-radius:10px;
-  height:260px;
+  height:360px;
   background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
   box-shadow: 0 10px 30px rgba(2,6,23,0.45) inset;
 }
@@ -1060,7 +1093,7 @@ overflow:hidden{
 
     <section id="instagram" class="card">
       <h2>Наш Instagram</h2>
-      <p style="color:var(--muted)">Смотрите кейсы и бehind-the-scenes в Instagram.</p>
+      <p style="color:var(--muted)">Смотрите кейсы и behind-the-scenes в Instagram.</p>
 
       <!-- Пример: вставлять отдельные embed-коды от Instagram (для каждого поста) -->
       <!-- Для автоматического добавления ленты потребуется Instagram API -->
@@ -1074,7 +1107,7 @@ overflow:hidden{
       <h2>Контакты</h2>
       <p style="color:var(--muted)"><strong>Instagram:</strong> <a href="https://www.instagram.com/uniquechronolab" target="_blank">@uniquechronolab</a></p>
       <p style="color:var(--muted)"><strong>Telegramm:</strong> <a href="https://t.me/uniquechronolab?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnSOB0Dl-nFcSMysEP7LYsbFhYwGnXSMWMU3mZH_KY-NQjHxUuPO9ih0MmMy4_aem__hxDWbtJ2B7CPILzORe07w" style="color:var(--text)">uniquechronolab</a></p>
-      <p style="color:var(--muted)"><strong>Заказы и консультации:</strong> укажите модель и желаемые изменения.</p>
+      <p style="color:var(--muted)"><strong> Телефон:</strong> +998 95 ___-__-__</p>
     </section>
   </main>
 
@@ -1205,6 +1238,40 @@ overflow:hidden{
     goTo(0);
   }
 })();
+</script>
+<script>
+// ❄ Создание снежинок
+function createSnowflake() {
+  const snowflake = document.createElement("div");
+  snowflake.classList.add("snowflake");
+  snowflake.textContent = "❄";
+
+  // Случайное положение
+  snowflake.style.left = Math.random() * window.innerWidth + "px";
+
+  // Индивидуальная скорость падения
+  const fallDuration = Math.random() * 5 + 4;
+  snowflake.style.animationDuration = fallDuration + "s";
+
+  // Случайный размер
+  const size = Math.random() * 12 + 8;
+  snowflake.style.fontSize = size + "px";
+
+  document.body.appendChild(snowflake);
+
+  // Удаляем по завершению
+  setTimeout(() => {
+    snowflake.remove();
+  }, fallDuration * 1000);
+}
+
+// создаём снежинку каждые 200–500ms
+setInterval(createSnowflake, 200 + Math.random() * 300);
+
+// ❄ Слой снега внизу
+const snowGround = document.createElement("div");
+snowGround.id = "snow-ground";
+document.body.appendChild(snowGround);
 </script>
 
 </body>

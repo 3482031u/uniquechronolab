@@ -187,6 +187,38 @@
 }
 </style>
 
+<!-- SNOW BACKGROUND STYLES: вставьте в <head> -->
+<style>
+/* canvas-фон поверх body, но позади контента (ниже z-index контента) */
+#snow-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;                 /* держим позади большинства UI (если у вас есть header с z-index>1) */
+  pointer-events: none;       /* не мешает кликам */
+  mix-blend-mode: screen;     /* опционально: делает снег светлее на тёмном фоне */
+}
+
+/* Полупрозрачный слой "сугроб" — но он рисуется в canvas; можно также иметь элемент-фолбек */
+#snow-fallback-ground {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 40px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.06));
+  opacity: 0.0; /* по умолчанию скрыт — основной снег рисуется в canvas */
+}
+
+/* Убедимся, что весь UI стоит выше снега — если у вас .container или header имеют z-index, используйте большее значение.
+   Пример:
+   .container { position: relative; z-index: 2; }
+*/
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -296,27 +328,33 @@
   will-change:transform;
 }
 
-/* каждый слайд занимает 100% ширины контейнера */
-.carousel-slide{
-  min-width:100%;
-  height:100%;
-  flex-shrink:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px; /* небольшой отступ вокруг изображения */
-  box-sizing:border-box;
+/* каждый слайд занимает ровно 100% ширины без лишних отступов */
+.carousel-slide {
+  flex: 0 0 100% !important;
+  min-width: 100% !important;
+  width: 100% !important;
+  height: 100%;
+  padding: 0 !important;     /* удаляем padding, чтобы не раздувал слайд */
+  margin: 0 !important;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
-/* картинка — заполняет слайд сохраняя пропорции */
-.carousel-slide img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-  border-radius:6px;
-  user-select:none;
+/* картинка внутри слайда */
+.carousel-slide img,
+.carousel-slide picture,
+.carousel-slide picture img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center;
+  display: block;
+  border-radius: 6px;
   -webkit-user-drag: none;
+  user-select: none;
 }
 
 /* точки-индикаторы внизу */
@@ -478,101 +516,64 @@
   }
 }
 
+/* === FIX: featured carousel — каждый слайд ровно 100% и картинка fit === */
+#carouselViewport,
+#carouselTrack,
+.carousel-slide {
+  box-sizing: border-box;
+}
+
+/* трек: flex, без gap/padding чтобы translateX(-N*100%) совпадал с границами слайдов */
+#carouselTrack {
+  display: flex !important;
+  gap: 0 !important;           /* если был gap — убираем */
+  padding: 0 !important;       /* убираем внутренние отступы */
+  margin: 0 !important;
+  width: 100%;
+}
+
+/* Каждый слайд — ровно ширина вьюпорта (100%) и не сжимается */
+.carousel-slide {
+  flex: 0 0 100% !important;   /* ключевая строка: фиксированная ширина слайда = 100% */
+  min-width: 100% !important;
+  height: 100%;
+  padding: 0 !important;       /* убрать padding, если он был */
+  margin: 0 !important;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* картинка / picture заполняет слайд и обрезается красиво */
+.carousel-slide picture,
+.carousel-slide img {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.carousel-slide img {
+  object-fit: cover !important;     /* cover — изображение заполнит контейнер, сохраняя пропорции */
+  object-position: center center;
+  border-radius: 6px;
+  -webkit-user-drag: none;
+}
+
+/* Если у тебя вёрстка давала визуальный отступ вокруг карусели — убедись, что wrapper имеет padding 0 */
+#carouselViewport { padding: 0 !important; margin: 0 !important; }
+
+/* Мобильные корректировки (урезаем высоту, если нужно) */
+@media (max-width:520px) {
+  #carouselViewport { height: 180px !important; }
+}
+@media (min-width:521px) and (max-width:900px) {
+  #carouselViewport { height: 220px !important; }
+}
+
 </style>
 
-<!-- ======= Скрипт (вставьте прямо перед </body>) ======= -->
-<script>
-(function(){
-  const track = document.getElementById('carouselTrack');
-  const carousel = document.getElementById('featuredCarousel');
-  const viewport = document.getElementById('carouselViewport');
-  const slides = track.querySelectorAll('.carousel-slide');
-  const dotsWrap = document.getElementById('carouselDots');
-  const total = slides.length;
-  let index = 0;
-  let intervalId = null;
-  const delay = 1600; // миллисекунд между переключениями при наведении
 
-  // Инициализация: создаём точки индикаторы
-  function createDots(){
-    if(!dotsWrap) return;
-    dotsWrap.innerHTML = '';
-    for(let i=0;i<total;i++){
-      const d = document.createElement('div');
-      d.className = 'dot' + (i===0 ? ' active' : '');
-      d.dataset.index = i;
-      d.addEventListener('click', ()=> goTo(i));
-      dotsWrap.appendChild(d);
-    }
-  }
-
-  function updateDots(){
-    const dots = dotsWrap.querySelectorAll('.dot');
-    dots.forEach(d => d.classList.toggle('active', Number(d.dataset.index) === index));
-  }
-
-  function goTo(i){
-    index = (i + total) % total;
-    track.style.transform = `translateX(-${index * 100}%)`;
-    updateDots();
-  }
-
-  function next(){
-    goTo(index + 1);
-  }
-
-  function startAutoplay(){
-    if(intervalId) return;
-    intervalId = setInterval(next, delay);
-  }
-
-  function stopAutoplay(){
-    if(!intervalId) return;
-    clearInterval(intervalId);
-    intervalId = null;
-  }
-
-  // hover / mouseenter / mouseleave — старт/стоп автоплея
-  const hoverArea = viewport || carousel;
-  hoverArea.addEventListener('mouseenter', () => {
-    if(total > 1) startAutoplay();
-  });
-  hoverArea.addEventListener('mouseleave', () => {
-    stopAutoplay();
-  });
-
-  // мобильный свайп (простая реализация)
-  let startX = null;
-  hoverArea.addEventListener('touchstart', e => { startX = e.touches[0].clientX; stopAutoplay(); });
-  hoverArea.addEventListener('touchend', e => {
-    if(startX === null) return;
-    const endX = e.changedTouches[0].clientX;
-    const diff = startX - endX;
-    if(Math.abs(diff) > 40){
-      if(diff > 0) next(); else goTo(index - 1);
-    }
-    startX = null;
-  });
-
-  // Клик по картинке — можно открыть лайтбокс (если у вас есть) или остановить/запустить
-  track.addEventListener('click', (e) => {
-    // пример: клик переключает на следующий
-    // next();
-  });
-
-  // Инициализация при загрузке
-  if(total > 1){
-    createDots();
-    goTo(0);
-  } else {
-    // если только 1 изображение — уберём точки
-    if(dotsWrap) dotsWrap.style.display = 'none';
-  }
-
-  // Защита: подгружаем картинки и если они слишком большие, браузер сам масштабирует по object-fit.
-  // Рекомендация: предварительно оптимизируйте изображения (jpeg/webp) и не используйте гигантские файлы.
-})();
-</script>
 <!-- ========== Конец: Featured carousel ========== -->
     </section>
 
@@ -1239,6 +1240,99 @@
   }
 })();
 </script>
+<!-- ======= Скрипт (вставьте прямо перед </body>) ======= -->
+<script>
+(function(){
+  const track = document.getElementById('carouselTrack');
+  const carousel = document.getElementById('featuredCarousel');
+  const viewport = document.getElementById('carouselViewport');
+  const slides = track.querySelectorAll('.carousel-slide');
+  const dotsWrap = document.getElementById('carouselDots');
+  const total = slides.length;
+  let index = 0;
+  let intervalId = null;
+  const delay = 1600; // миллисекунд между переключениями при наведении
+
+  // Инициализация: создаём точки индикаторы
+  function createDots(){
+    if(!dotsWrap) return;
+    dotsWrap.innerHTML = '';
+    for(let i=0;i<total;i++){
+      const d = document.createElement('div');
+      d.className = 'dot' + (i===0 ? ' active' : '');
+      d.dataset.index = i;
+      d.addEventListener('click', ()=> goTo(i));
+      dotsWrap.appendChild(d);
+    }
+  }
+
+  function updateDots(){
+    const dots = dotsWrap.querySelectorAll('.dot');
+    dots.forEach(d => d.classList.toggle('active', Number(d.dataset.index) === index));
+  }
+
+  function goTo(i){
+    index = (i + total) % total;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    updateDots();
+  }
+
+  function next(){
+    goTo(index + 1);
+  }
+
+  function startAutoplay(){
+    if(intervalId) return;
+    intervalId = setInterval(next, delay);
+  }
+
+  function stopAutoplay(){
+    if(!intervalId) return;
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+
+  // hover / mouseenter / mouseleave — старт/стоп автоплея
+  const hoverArea = viewport || carousel;
+  hoverArea.addEventListener('mouseenter', () => {
+    if(total > 1) startAutoplay();
+  });
+  hoverArea.addEventListener('mouseleave', () => {
+    stopAutoplay();
+  });
+
+  // мобильный свайп (простая реализация)
+  let startX = null;
+  hoverArea.addEventListener('touchstart', e => { startX = e.touches[0].clientX; stopAutoplay(); });
+  hoverArea.addEventListener('touchend', e => {
+    if(startX === null) return;
+    const endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+    if(Math.abs(diff) > 40){
+      if(diff > 0) next(); else goTo(index - 1);
+    }
+    startX = null;
+  });
+
+  // Клик по картинке — можно открыть лайтбокс (если у вас есть) или остановить/запустить
+  track.addEventListener('click', (e) => {
+    // пример: клик переключает на следующий
+    // next();
+  });
+
+  // Инициализация при загрузке
+  if(total > 1){
+    createDots();
+    goTo(0);
+  } else {
+    // если только 1 изображение — уберём точки
+    if(dotsWrap) dotsWrap.style.display = 'none';
+  }
+
+  // Защита: подгружаем картинки и если они слишком большие, браузер сам масштабирует по object-fit.
+  // Рекомендация: предварительно оптимизируйте изображения (jpeg/webp) и не используйте гигантские файлы.
+})();
+</script>
 <script>
 // ❄ Создание снежинок
 function createSnowflake() {
@@ -1274,5 +1368,222 @@ snowGround.id = "snow-ground";
 document.body.appendChild(snowGround);
 </script>
 
+<script>
+/*
+Snow accumulation canvas
+- рисует падающие снежинки (particles)
+- когда снежинка касается "земли" (учёт накопления), она оседает и увеличивает профиль кучи
+- для производительности использует discrete heightmap (ширина = window.innerWidth / bucketSize)
+- pointer-events: none, чтобы не мешать сайту
+*/
+
+(function(){
+  const DPR = Math.max(1, window.devicePixelRatio || 1);
+  const canvas = document.createElement('canvas');
+  canvas.id = 'snow-canvas';
+  document.body.appendChild(canvas);
+
+  // fallback ground element (не обязательно)
+  const fallbackGround = document.createElement('div');
+  fallbackGround.id = 'snow-fallback-ground';
+  document.body.appendChild(fallbackGround);
+
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  // Настройки (можешь подправить)
+  const BUCKET_PX = 4;              // ширина "ячейки" для накопления (чем меньше — тем детальнее, но медленнее)
+  const MAX_PARTICLES = 150;        // максимальное число одновременно падающих снежинок
+  const SPAWN_RATE = 0.018;         // шанс спавна новой снежинки на каждый кадр (в разумных пределах)
+  const WIND_AMPLITUDE = 0.6;       // сила ветра (0..1.5)
+  const GRAVITY = 0.15;             // ускорение
+  const FRICTION = 0.995;           // трение по горизонтали
+  const PILE_DAMPING = 0.96;        // как "расплывается" куча при накоплении
+  const SNOW_COLOR = '255,255,255'; // цвет снежинок (rgb)
+
+  let width = 0, height = 0;
+  let buckets = [];      // массив высот кучи (для каждой ячейки)
+  let bucketCount = 0;
+
+  // particles = [{x, y, vx, vy, r, mass, life}]
+  const particles = [];
+
+  function resize() {
+    width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+
+    canvas.width = Math.floor(width * DPR);
+    canvas.height = Math.floor(height * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+    bucketCount = Math.ceil(width / BUCKET_PX);
+    buckets = new Float32Array(bucketCount);
+    // initialize small base so first flakes land smoothly
+    for(let i=0;i<bucketCount;i++) buckets[i] = 0;
+  }
+
+  // spawn one snowflake at top
+  function spawn() {
+    if(particles.length >= MAX_PARTICLES) return;
+    const x = Math.random() * width;
+    const r = 1.5 + Math.random() * 6; // radius px
+    const mass = Math.max(0.5, r * 0.08);
+    particles.push({
+      x: x,
+      y: -10 - Math.random()*30,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: 0.3 + Math.random() * 0.5,
+      r: r,
+      mass: mass,
+      settled: false
+    });
+  }
+
+  // convert x to bucket index
+  function bucketIndex(x) {
+    let i = Math.floor(x / BUCKET_PX);
+    if(i < 0) i = 0;
+    if(i >= bucketCount) i = bucketCount - 1;
+    return i;
+  }
+
+  // settle particle into buckets (simple distribution across few buckets based on radius)
+  function settleParticle(p) {
+    const start = Math.max(0, bucketIndex(p.x - p.r));
+    const end = Math.min(bucketCount - 1, bucketIndex(p.x + p.r));
+    const spread = end - start + 1;
+    const add = (p.r * 0.6) / Math.max(1, spread); // amount to add per bucket
+    for(let j = start; j <= end; j++) {
+      buckets[j] += add;
+    }
+  }
+
+  // simulate one frame
+  let time = performance.now();
+  let windOffset = 0;
+  function frame(now) {
+    const dt = Math.min(40, now - time) / 16.6667; // normalize to ~60fps
+    time = now;
+
+    // resize if needed
+    if(canvas.width / DPR !== width || canvas.height / DPR !== height) {
+      resize();
+    }
+
+    // maybe spawn a new particle
+    if(Math.random() < SPAWN_RATE) spawn();
+
+    // compute a soft wind that changes over time
+    windOffset += 0.002 * dt;
+    const wind = Math.sin(windOffset * 0.8) * WIND_AMPLITUDE + Math.sin(windOffset * 0.34) * (WIND_AMPLITUDE*0.4);
+
+    // update particles
+    for(let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      if(p.settled) { particles.splice(i,1); continue; } // shouldn't happen
+      // physics
+      p.vx = p.vx * FRICTION + wind * 0.03;
+      p.vy += GRAVITY * dt * 0.6;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+
+      // bounds
+      if(p.x < -50) p.x = width + 50;
+      if(p.x > width + 50) p.x = -50;
+
+      // check collision with pile
+      const idx = bucketIndex(p.x);
+      // pile top y = height - buckets[idx]
+      const pileTop = height - buckets[idx];
+      if(p.y + p.r >= pileTop) {
+        // settle
+        p.settled = true;
+        settleParticle(p);
+        particles.splice(i,1);
+        continue;
+      }
+      // if particle falls beyond bottom (safety)
+      if(p.y > height + 200) {
+        particles.splice(i,1);
+        continue;
+      }
+    }
+
+    // simple diffusion for pile smoothing
+    for(let j=0;j<bucketCount;j++){
+      // neighbor smoothing
+      if(j>0) buckets[j] = buckets[j] * PILE_DAMPING + buckets[j-1] * (1-PILE_DAMPING) * 0.3;
+      if(j<bucketCount-1) buckets[j] = buckets[j] * PILE_DAMPING + buckets[j+1] * (1-PILE_DAMPING) * 0.3;
+    }
+
+    // render
+    ctx.clearRect(0,0,width,height);
+
+    // draw faint background shimmer (optional)
+    // ctx.fillStyle = 'rgba(255,255,255,0.01)';
+    // ctx.fillRect(0,0,width,height);
+
+    // draw settled pile as polygon
+    ctx.beginPath();
+    ctx.moveTo(0, height);
+    for(let j=0;j<bucketCount;j++){
+      const x = j * BUCKET_PX;
+      const y = height - buckets[j];
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(width, height);
+    ctx.closePath();
+    // fill pile with soft gradient
+    const g = ctx.createLinearGradient(0, height-200, 0, height);
+    g.addColorStop(0, 'rgba(255,255,255,0.08)');
+    g.addColorStop(1, 'rgba(255,255,255,0.95)');
+    ctx.fillStyle = g;
+    ctx.fill();
+
+    // draw small highlight on pile top
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // draw falling particles on top of pile
+    for(let i=0;i<particles.length;i++){
+      const p = particles[i];
+      ctx.beginPath();
+      // subtle wind rotation
+      ctx.arc(p.x, p.y, Math.max(1, p.r/2), 0, Math.PI*2);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(${SNOW_COLOR},${Math.max(0.18, Math.min(0.95, p.r/10))})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  // expose controls for tuning from console if needed
+  window.__snow = {
+    spawn, particles, buckets, resize
+  };
+
+  // initialize
+  resize();
+  requestAnimationFrame(frame);
+
+  // handle page visibility to pause
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden) {
+      // pause by clearing particles spawn (we keep arrays)
+    }
+  });
+
+  // responsive: recalc on resize
+  let rto = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(rto);
+    rto = setTimeout(()=>resize(), 120);
+  });
+})();
+</script>
 </body>
 </html>

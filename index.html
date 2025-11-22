@@ -1538,5 +1538,105 @@ snowGround.id = "snow-ground";
 document.body.appendChild(snowGround);
 </script>
 
+<script>
+// =============== ГЛАВНЫЙ ЛАЙТБОКС ДЛЯ ГАЛЕРЕИ ==================
+
+const grid = document.getElementById("galleryGrid");
+const lightbox = document.getElementById("galleryLightbox");
+const lbImg = lightbox.querySelector(".gc-image");
+const lbCaption = lightbox.querySelector(".gc-caption");
+const lbPrev = lightbox.querySelector(".gc-prev");
+const lbNext = lightbox.querySelector(".gc-next");
+const lbClose = lightbox.querySelector(".gc-close");
+const lbBackdrop = lightbox.querySelector(".gc-backdrop");
+
+let currentFigure = null;      // <figure> на который кликнули
+let currentImages = [];        // массив изображений в mini-track
+let currentIndex = 0;
+
+// ОТКРЫТЬ ЛАЙТБОКС
+function openLightbox(figure, index) {
+  currentFigure = figure;
+  currentImages = Array.from(figure.querySelectorAll(".mini-track img"))
+                       .map(img => ({ src: img.src, alt: img.alt }));
+  currentIndex = index;
+
+  updateLightbox();
+  lightbox.style.display = "flex";
+  lightbox.setAttribute("aria-hidden", "false");
+}
+
+// ЗАКРЫТЬ ЛАЙТБОКС
+function closeLightbox() {
+  lightbox.style.display = "none";
+  lightbox.setAttribute("aria-hidden", "true");
+  lbImg.src = "";
+  lbCaption.innerHTML = "";
+}
+
+// ОБНОВИТЬ ЛАЙТБОКС (картинка + описание)
+function updateLightbox() {
+  const item = currentImages[currentIndex];
+  lbImg.src = item.src;
+  lbImg.alt = item.alt;
+
+  // --- собираем title и description ---
+  const title = currentFigure.dataset.title || "";
+  const desc = currentFigure.dataset.desc || "";
+
+  let html = "";
+
+  if (title) {
+    html += `<h3 style="margin:0 0 8px 0; font-size:18px;">${title}</h3>`;
+  }
+
+  if (desc) {
+    const lines = desc.split(/\n|;/).map(l => l.trim()).filter(Boolean);
+    html += "<ul style='padding-left:18px; margin:0;'>";
+    lines.forEach(line => {
+      html += `<li style="margin-bottom:4px;">${line}</li>`;
+    });
+    html += "</ul>";
+  }
+
+  lbCaption.innerHTML = html;
+}
+
+// ПЕРЕКЛЮЧЕНИЕ СЛАЙДОВ
+function nextLB() {
+  currentIndex = (currentIndex + 1) % currentImages.length;
+  updateLightbox();
+}
+function prevLB() {
+  currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+  updateLightbox();
+}
+
+// ====== КЛИК ПО МИНИАТЮРАМ ======
+grid.addEventListener("click", e => {
+  const img = e.target.closest(".mini-track img");
+  if (!img) return;
+
+  const figure = img.closest(".gallery-item");
+  const imgs = Array.from(figure.querySelectorAll(".mini-track img"));
+  const index = imgs.indexOf(img);
+
+  openLightbox(figure, index);
+});
+
+// ====== КНОПКИ ======
+lbClose.addEventListener("click", closeLightbox);
+lbBackdrop.addEventListener("click", closeLightbox);
+lbPrev.addEventListener("click", prevLB);
+lbNext.addEventListener("click", nextLB);
+
+// ====== ESC ======
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowRight") nextLB();
+  if (e.key === "ArrowLeft") prevLB();
+});
+</script>
+
 </body>
 </html>

@@ -1538,44 +1538,5 @@ snowGround.id = "snow-ground";
 document.body.appendChild(snowGround);
 </script>
 
-<script>
-document.querySelectorAll('.gallery-item').forEach(item => {
-  const images = item.querySelectorAll('img');
-
-  images.forEach(img => {
-    img.addEventListener('click', () => {
-      const fullSrc = img.src;
-      const title = item.dataset.title || "";
-      const desc = item.dataset.desc || "";
-
-      // картинка
-      document.getElementById('lightboxImg').src = fullSrc;
-
-      // заголовок
-      document.getElementById('lbTitle').textContent = title;
-
-      // описание (форматируем по строкам)
-      const descList = document.getElementById('lbDescription');
-      descList.innerHTML = "";
-
-      desc.split(";").forEach(part => {
-        if (part.trim() !== "") {
-          const li = document.createElement("li");
-          li.textContent = part.trim();
-          descList.appendChild(li);
-        }
-      });
-
-      // показать лайтбокс
-      document.getElementById('lightbox').classList.add('show');
-    });
-  });
-});
-
-// закрытие
-document.getElementById('closeLightbox').addEventListener('click', () => {
-  document.getElementById('lightbox').classList.remove('show');
-});
-</script>
 </body>
 </html>

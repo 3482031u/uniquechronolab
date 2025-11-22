@@ -1185,23 +1185,137 @@ data-desc="Механизм: аналог Seiko NH-35
 <script>
   // Показ текущего года
   document.getElementById('year').textContent = new Date().getFullYear();
+<script>
+(function(){
+  // Селекторы из HTML: galleryGrid, galleryLightbox, .gc-image, .gc-caption, .gc-prev, .gc-next, .gc-close
+  const grid = document.getElementById('galleryGrid');
+  const lightbox = document.getElementById('galleryLightbox');
+  const backdrop = lightbox.querySelector('.gc-backdrop');
+  const imgEl = lightbox.querySelector('.gc-image');
+  const captionEl = lightbox.querySelector('.gc-caption');
+  const btnClose = lightbox.querySelector('.gc-close');
+  const btnPrev = lightbox.querySelector('.gc-prev');
+  const btnNext = lightbox.querySelector('.gc-next');
 
-  // Lightbox простая логика
-  const gallery = document.getElementById('galleryGrid');
-  const lb = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lbImg');
-  const lbClose = document.getElementById('lbClose');
+  let currentItem = null;
+  let currentImgs = [];
+  let currentIndex = 0;
 
-  gallery.addEventListener('click', (e) => {
-    const img = e.target.closest('img');
+  // Открыть лайтбокс для конкретного .gallery-item и индекса изображения
+  function openLightbox(item, index) {
+    currentItem = item;
+    currentImgs = Array.from(item.querySelectorAll('.mini-track img')).map(i => ({ src: i.src, alt: i.alt || '' }));
+    currentIndex = Math.max(0, Math.min(index || 0, currentImgs.length - 1));
+    renderLightbox();
+    lightbox.style.display = 'flex';
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.addEventListener('keydown', onKey);
+  }
+
+  function closeLightbox() {
+    lightbox.style.display = 'none';
+    lightbox.setAttribute('aria-hidden', 'true');
+    imgEl.src = '';
+    captionEl.innerHTML = '';
+    currentItem = null;
+    currentImgs = [];
+    document.removeEventListener('keydown', onKey);
+  }
+
+  function prev() {
+    if(!currentImgs.length) return;
+    currentIndex = (currentIndex - 1 + currentImgs.length) % currentImgs.length;
+    renderLightbox();
+  }
+
+  function next() {
+    if(!currentImgs.length) return;
+    currentIndex = (currentIndex + 1) % currentImgs.length;
+    renderLightbox();
+  }
+
+  function renderLightbox() {
+    const obj = currentImgs[currentIndex];
+    imgEl.src = obj.src;
+    imgEl.alt = obj.alt || '';
+
+    // Title from data-title
+    const title = currentItem ? (currentItem.dataset.title || '') : '';
+    // Desc from data-desc -> split by newline or semicolon
+    const rawDesc = currentItem ? (currentItem.dataset.desc || '') : '';
+    const parts = rawDesc.split(/\r?\n|;/).map(s => s.trim()).filter(Boolean);
+
+    // Формируем аккуратную разметку: заголовок + список
+    let html = '';
+    if(title) html += `<div style="font-weight:600;color:var(--text);margin-top:6px">${escapeHtml(title)}</div>`;
+    if(parts.length){
+      html += '<ul style="list-style: none; padding:8px 0 0 0; margin:0; color:var(--muted); text-align:left; max-width:90%;">';
+      for(const p of parts){
+        html += `<li style="margin:4px 0;">${escapeHtml(p)}</li>`;
+      }
+      html += '</ul>';
+    }
+    captionEl.innerHTML = html;
+  }
+
+  // Escape helper to avoid breaking HTML if desc contains "<"
+  function escapeHtml(text){
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function onKey(e){
+    if(e.key === 'Escape') closeLightbox();
+    if(e.key === 'ArrowLeft') prev();
+    if(e.key === 'ArrowRight') next();
+  }
+
+  // Делегируем клики на grid: если кликнули по mini-track img, открываем
+  grid.addEventListener('click', (ev) => {
+    const img = ev.target.closest('.mini-track img');
     if(!img) return;
-    const full = img.dataset.full || img.src;
-    lbImg.src = full;
-    lb.classList.add('show');
-    lb.setAttribute('aria-hidden','false');
+    const item = img.closest('.gallery-item');
+    if(!item) return;
+    // определим индекс в наборе этой мини-карусели
+    const imgs = Array.from(item.querySelectorAll('.mini-track img'));
+    const idx = imgs.indexOf(img);
+    openLightbox(item, idx);
   });
-  lbClose.addEventListener('click', ()=>{ lb.classList.remove('show'); lb.setAttribute('aria-hidden','true');});
-  lb.addEventListener('click', (e) => { if(e.target===lb) { lb.classList.remove('show'); lb.setAttribute('aria-hidden','true'); }});
+
+  // Кнопки управления
+  btnClose.addEventListener('click', closeLightbox);
+  backdrop.addEventListener('click', closeLightbox);
+  btnPrev.addEventListener('click', prev);
+  btnNext.addEventListener('click', next);
+
+  // свайп для мобильных
+  let sX = null;
+  imgEl.addEventListener('touchstart', e => { sX = e.touches[0].clientX; });
+  imgEl.addEventListener('touchend', e => {
+    if(sX === null) return;
+    const eX = e.changedTouches[0].clientX;
+    const d = sX - eX;
+    if(Math.abs(d) > 40){
+      if(d > 0) next(); else prev();
+    }
+    sX = null;
+  });
+
+  // Закрытие через Esc (на случай, если фокус не в документе)
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && lightbox.style.display === 'flex') closeLightbox();
+  });
+
+  // Инициализация: прячем лайтбокс по умолчанию (если не скрыт)
+  if (!lightbox.style.display || lightbox.style.display === '') {
+    lightbox.style.display = 'none';
+    lightbox.setAttribute('aria-hidden', 'true');
+  }
+})();
+</script>
+
 </script>
 
 <!-- JSON-LD: Organization (пример) -->
